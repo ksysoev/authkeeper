@@ -30,13 +30,11 @@ make test
 ```
 authkeeper/
 ├── cmd/authkeeper/          # Main application entry point
-├── internal/
+├── pkg/
 │   ├── cmd/                 # Cobra command implementations
 │   ├── vault/               # Vault storage and encryption
 │   ├── oauth/               # OAuth2 client implementation
-│   └── ui/                  # Simple terminal UI utilities
-│       └── ui.go            # Color output, prompts, confirmations
-├── pkg/
+│   ├── ui/                  # Simple terminal UI utilities
 │   └── crypto/              # Encryption primitives
 ├── examples/
 │   └── mock-server/         # Mock OAuth2 server
@@ -76,22 +74,22 @@ Add support for refresh token flow
 
 ### Adding a New OAuth2 Flow
 
-1. Update `internal/oauth/client.go` with new flow method
-2. Update command in `internal/cmd/commands.go`
+1. Update `pkg/oauth/client.go` with new flow method
+2. Update command in `pkg/cmd/commands.go`
 3. Use `ui` package for user interaction
 4. Update README.md with usage instructions
 5. Add tests
 
 ### Adding a New Command
 
-1. Create command function in `internal/cmd/commands.go`
+1. Create command function in `pkg/cmd/commands.go`
 2. Add command to root command in `InitCommand()`
 3. Use `ui` package helpers for prompts and output
 4. Document in README.md
 
 ### Updating UI
 
-All UI utilities are in `internal/ui/ui.go`. Add new helper functions there for consistent user interaction.
+All UI utilities are in `pkg/ui/ui.go`. Add new helper functions there for consistent user interaction.
 
 ## Testing
 

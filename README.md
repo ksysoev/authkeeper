@@ -130,12 +130,11 @@ All interactions are simple text prompts - just type your answers and press Ente
 ```
 authkeeper/
 ├── cmd/authkeeper/          # Main application entry
-├── internal/
+├── pkg/
 │   ├── cmd/                 # Cobra commands
 │   ├── vault/               # Encrypted vault management
 │   ├── oauth/               # OAuth2 client
-│   └── tui/                 # Bubble Tea UI models
-├── pkg/
+│   ├── ui/                  # Terminal UI utilities
 │   └── crypto/              # Encryption utilities
 └── examples/
     └── mock-server/         # Mock OAuth2 server for testing

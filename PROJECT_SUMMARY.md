@@ -27,7 +27,7 @@ AuthKeeper is a secure CLI secret manager and OAuth2/OIDC client with a simple t
 authkeeper/
 ├── cmd/authkeeper/          # Application entry point
 │   └── main.go             # Main executable
-├── internal/
+├── pkg/
 │   ├── cmd/                # CLI commands (Cobra)
 │   │   ├── root.go         # Root command setup
 │   │   └── commands.go     # All command implementations

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ksysoev/authkeeper/internal/oauth"
-	"github.com/ksysoev/authkeeper/internal/ui"
-	"github.com/ksysoev/authkeeper/internal/vault"
+	"github.com/ksysoev/authkeeper/pkg/oauth"
+	"github.com/ksysoev/authkeeper/pkg/ui"
+	"github.com/ksysoev/authkeeper/pkg/vault"
 	"github.com/spf13/cobra"
 )
 

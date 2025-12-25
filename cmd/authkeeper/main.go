@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/ksysoev/authkeeper/internal/cmd"
+	"github.com/ksysoev/authkeeper/pkg/cmd"
 )
 
 var (
