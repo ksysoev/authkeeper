@@ -13,19 +13,18 @@
 
 ## Keyboard Shortcuts
 
-### Navigation
-- `↓` / `j` - Move down
-- `↑` / `k` - Move up
-- `Tab` - Next field
-- `Shift+Tab` - Previous field
-- `Enter` - Confirm/Select
-- `Esc` - Cancel/Back
-- `Ctrl+C` - Force quit
-- `q` - Quit (where available)
+### Input
+- `Enter` - Submit/Confirm
+- `Ctrl+C` - Cancel/Exit
+- Type naturally at prompts
 
-### Delete Confirmation
-- `Y` - Confirm delete
-- `N` - Cancel delete
+### Confirmations
+- `y` / `yes` - Confirm
+- `n` / `no` - Cancel
+
+### List Selection
+- Type the number of your choice
+- Press `Enter` to confirm
 
 ## File Locations
 
@@ -158,12 +157,11 @@ response = requests.get('https://api.example.com/resource', headers=headers)
 
 ## Status Indicators
 
-- `⠋` - Loading/Processing (animated spinner)
+- `...` - Processing/Loading
 - `✓` - Success
 - `✗` - Error
-- `▶` - Selected item
+- `⚠` - Warning
 - `💡` - Tip/Information
-- `⚠️` - Warning
 
 ## Error Codes
 
@@ -198,10 +196,10 @@ Currently, AuthKeeper doesn't use environment variables. All configuration is in
 
 ## Tips
 
-1. ⌨️ **Use Tab** to navigate between fields quickly
-2. 🔍 **Check the help text** at the bottom of each screen
-3. 🎨 **Focused fields** are highlighted in purple
-4. ⏰ **Watch the spinner** during async operations
+1. ⌨️ **Simple prompts** - Just type and press Enter
+2. 🔍 **Read prompts carefully** for instructions
+3. 🎨 **Colors help** identify message types
+4. ⏰ **Watch for "..."** during operations
 5. 💾 **Backup your vault** regularly
 6. 🔐 **Strong password** = secure vault
 7. 📝 **Organize names** for easy selection

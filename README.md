@@ -1,15 +1,15 @@
 # AuthKeeper
 
-A secure CLI secret manager and OAuth2/OIDC client with a beautiful TUI built with Bubble Tea.
+A secure CLI secret manager and OAuth2/OIDC client with a simple terminal interface.
 
 ## Features
 
 - 🔐 **Encrypted Vault** - AES-256-GCM encryption with PBKDF2 key derivation
 - 🎯 **OAuth2/OIDC Support** - Client credentials flow implementation
-- 🎨 **Beautiful TUI** - Minimalistic and fancy interface with animations
+- 🎨 **Simple Interface** - Clean terminal UI with colored output
 - 🔑 **Secure Storage** - All credentials encrypted at rest
 - 🎫 **Easy Token Issuance** - Quick access token generation
-- ⌨️ **Intuitive Navigation** - Keyboard-driven interface
+- ⌨️ **Intuitive Prompts** - Straightforward command-line interaction
 
 ## Installation
 
@@ -38,9 +38,10 @@ You'll be prompted to:
 2. Enter client details:
    - Client Name (e.g., "My Auth Server")
    - Client ID
-   - Client Secret
+   - Client Secret (hidden as you type)
    - Token URL
-   - Scopes (optional)
+   - Scopes (optional, space-separated)
+3. Review and confirm
 
 ### 2. Issue an access token
 
@@ -48,7 +49,7 @@ You'll be prompted to:
 ./authkeeper token
 ```
 
-Select your client from the list and get an access token instantly!
+Enter your password, select a client from the numbered list, and get your token!
 
 ### 3. List all clients
 
@@ -61,6 +62,8 @@ Select your client from the list and get an access token instantly!
 ```bash
 ./authkeeper delete
 ```
+
+Select a client and confirm deletion.
 
 ## Demo with Mock Server
 
@@ -93,14 +96,17 @@ go run examples/mock-server/main.go
 | `authkeeper delete` | Delete a client from vault |
 | `authkeeper --help` | Show help information |
 
-## Keyboard Navigation
+## User Interface
 
-- **Enter** - Confirm/Continue
-- **Tab/↓** - Next field/item
-- **Shift+Tab/↑** - Previous field/item
-- **Esc** - Cancel/Quit
-- **Y/N** - Confirm/Cancel (delete operations)
-- **q** - Quit (where applicable)
+The interface uses colored terminal output for clarity:
+- 🟣 **Magenta** - Titles and headings
+- 🔵 **Cyan** - Interactive prompts and selections
+- 🟢 **Green** - Success messages
+- 🔴 **Red** - Error messages
+- 🟡 **Yellow** - Warnings
+- ⚪ **Gray** - Muted/informational text
+
+All interactions are simple text prompts - just type your answers and press Enter.
 
 ## Architecture
 
@@ -157,10 +163,9 @@ make clean
 ## Tech Stack
 
 - **Framework**: [Cobra](https://github.com/spf13/cobra) - CLI framework
-- **TUI**: [Bubble Tea](https://github.com/charmbracelet/bubbletea) - Terminal UI framework
-- **Styling**: [Lipgloss](https://github.com/charmbracelet/lipgloss) - Style definitions
-- **Components**: [Bubbles](https://github.com/charmbracelet/bubbles) - TUI components
+- **Terminal I/O**: golang.org/x/term - Password input handling
 - **Crypto**: golang.org/x/crypto - Encryption primitives
+- **OAuth2**: golang.org/x/oauth2 - OAuth2 support
 
 ## Contributing
 
@@ -180,13 +185,12 @@ MIT License - see [LICENSE](LICENSE) file for details
 - [ ] Token caching
 - [ ] Shell completion scripts
 
-## Screenshots
+## Interface Style
 
-*Note: Since this is a TUI application, it's best experienced in your terminal!*
-
-The interface features:
-- 🎨 Purple/violet color scheme
-- ⚡ Smooth animations during operations
-- 📦 Rounded border boxes
-- 🔄 Spinner animations for async operations
-- ✨ Focused input highlighting
+The CLI uses a simple, straightforward text interface:
+- Clear prompts for user input
+- Colored output for better readability
+- Password fields masked with bullets (•)
+- Boxed output for structured data
+- Confirmation prompts for destructive operations
+- Spinner indicators for operations that take time

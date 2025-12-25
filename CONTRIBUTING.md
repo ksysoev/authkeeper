@@ -34,12 +34,8 @@ authkeeper/
 │   ├── cmd/                 # Cobra command implementations
 │   ├── vault/               # Vault storage and encryption
 │   ├── oauth/               # OAuth2 client implementation
-│   └── tui/                 # Bubble Tea TUI models
-│       ├── add.go           # Add client UI
-│       ├── token.go         # Token issuance UI
-│       ├── list.go          # List clients UI
-│       ├── delete.go        # Delete client UI
-│       └── styles.go        # UI styles and colors
+│   └── ui/                  # Simple terminal UI utilities
+│       └── ui.go            # Color output, prompts, confirmations
 ├── pkg/
 │   └── crypto/              # Encryption primitives
 ├── examples/
@@ -56,11 +52,11 @@ authkeeper/
 - Add comments for exported functions
 - Keep functions small and focused
 
-### TUI Guidelines
-- Maintain consistent styling using `styles.go`
-- Provide helpful keyboard hints
-- Add loading animations for async operations
-- Handle all error cases gracefully
+### UI Guidelines
+- Use color helpers from `ui` package
+- Provide clear prompts and error messages
+- Always mask sensitive inputs (passwords, secrets)
+- Show progress indicators for slow operations
 
 ### Commit Messages
 - Use clear, descriptive commit messages
@@ -81,8 +77,8 @@ Add support for refresh token flow
 ### Adding a New OAuth2 Flow
 
 1. Update `internal/oauth/client.go` with new flow method
-2. Create or update TUI model in `internal/tui/`
-3. Add new command in `internal/cmd/commands.go`
+2. Update command in `internal/cmd/commands.go`
+3. Use `ui` package for user interaction
 4. Update README.md with usage instructions
 5. Add tests
 
@@ -90,12 +86,12 @@ Add support for refresh token flow
 
 1. Create command function in `internal/cmd/commands.go`
 2. Add command to root command in `InitCommand()`
-3. Create TUI model in `internal/tui/` if needed
+3. Use `ui` package helpers for prompts and output
 4. Document in README.md
 
-### Updating Styles
+### Updating UI
 
-All UI styles are centralized in `internal/tui/styles.go`. Update colors and styles there to maintain consistency.
+All UI utilities are in `internal/ui/ui.go`. Add new helper functions there for consistent user interaction.
 
 ## Testing
 
