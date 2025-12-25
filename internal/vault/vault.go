@@ -46,6 +46,12 @@ func GetDefaultVaultPath() (string, error) {
 	return filepath.Join(vaultDir, "vault.enc"), nil
 }
 
+// Exists checks if the vault file exists
+func (v *Vault) Exists() bool {
+	_, err := os.Stat(v.path)
+	return err == nil
+}
+
 // Load loads and decrypts the vault
 func (v *Vault) Load(password string) (*VaultData, error) {
 	data, err := os.ReadFile(v.path)

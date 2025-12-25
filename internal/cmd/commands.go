@@ -33,13 +33,19 @@ func runAddCommand() error {
 
 	v := vault.New(vaultPath)
 
-	// Get master password
-	ui.PrintInfo("Enter master password to unlock vault")
-	password, err := ui.ReadPassword("Master Password: ")
+	// Check if vault exists and prompt accordingly
+	isNewVault := !v.Exists()
+	if isNewVault {
+		ui.PrintInfo("First time setup - creating encrypted vault")
+		fmt.Println()
+	} else {
+		ui.PrintInfo("Enter master password to unlock vault")
+	}
+
+	password, err := ui.PromptMasterPassword(isNewVault)
 	if err != nil {
 		return fmt.Errorf("failed to read password: %w", err)
 	}
-	fmt.Println()
 
 	// Get client details
 	ui.PrintInfo("Enter client credentials")
@@ -139,9 +145,16 @@ func runTokenCommand() error {
 
 	v := vault.New(vaultPath)
 
+	// Check if vault exists
+	if !v.Exists() {
+		ui.PrintWarning("Vault not found")
+		ui.PrintMuted("Use 'authkeeper add' to create vault and add your first client")
+		return nil
+	}
+
 	// Get master password
 	ui.PrintInfo("Enter master password to unlock vault")
-	password, err := ui.ReadPassword("Master Password: ")
+	password, err := ui.PromptMasterPassword(false)
 	if err != nil {
 		return fmt.Errorf("failed to read password: %w", err)
 	}
@@ -237,9 +250,16 @@ func runListCommand() error {
 
 	v := vault.New(vaultPath)
 
+	// Check if vault exists
+	if !v.Exists() {
+		ui.PrintWarning("Vault not found")
+		ui.PrintMuted("Use 'authkeeper add' to create vault and add your first client")
+		return nil
+	}
+
 	// Get master password
 	ui.PrintInfo("Enter master password to unlock vault")
-	password, err := ui.ReadPassword("Master Password: ")
+	password, err := ui.PromptMasterPassword(false)
 	if err != nil {
 		return fmt.Errorf("failed to read password: %w", err)
 	}
@@ -302,9 +322,16 @@ func runDeleteCommand() error {
 
 	v := vault.New(vaultPath)
 
+	// Check if vault exists
+	if !v.Exists() {
+		ui.PrintWarning("Vault not found")
+		ui.PrintMuted("Use 'authkeeper add' to create vault and add your first client")
+		return nil
+	}
+
 	// Get master password
 	ui.PrintInfo("Enter master password to unlock vault")
-	password, err := ui.ReadPassword("Master Password: ")
+	password, err := ui.PromptMasterPassword(false)
 	if err != nil {
 		return fmt.Errorf("failed to read password: %w", err)
 	}

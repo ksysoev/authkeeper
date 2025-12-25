@@ -27,14 +27,31 @@ make install
 
 ## Quick Start
 
+### First Time Setup
+
+When you run `authkeeper add` for the first time, you'll be prompted to create a new vault:
+
+```bash
+./authkeeper add
+```
+
+**First-time flow:**
+1. Create a strong master password (minimum 8 characters)
+2. Confirm the password by entering it again
+3. Enter your first client details
+
+**Important:** Your master password encrypts all credentials. If you forget it, there's no way to recover your data!
+
 ### 1. Add your first OIDC client
+
+After creating the vault (or on subsequent runs):
 
 ```bash
 ./authkeeper add
 ```
 
 You'll be prompted to:
-1. Enter your master password (creates vault if first time)
+1. Enter your master password
 2. Enter client details:
    - Client Name (e.g., "My Auth Server")
    - Client ID

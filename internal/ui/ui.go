@@ -151,6 +151,52 @@ func ClearScreen() {
 	fmt.Print("\033[H\033[2J")
 }
 
+// PromptMasterPassword prompts for master password with confirmation for new vault
+func PromptMasterPassword(isNewVault bool) (string, error) {
+	if isNewVault {
+		PrintTitle("🔐 Create New Vault")
+		fmt.Println()
+		PrintInfo("You're creating a new vault. Please choose a strong master password.")
+		PrintWarning("This password encrypts all your credentials - don't forget it!")
+		fmt.Println()
+
+		for {
+			password, err := ReadPassword("Enter master password: ")
+			if err != nil {
+				return "", err
+			}
+
+			if len(password) < 8 {
+				PrintError("Password must be at least 8 characters long")
+				fmt.Println()
+				continue
+			}
+
+			confirm, err := ReadPassword("Confirm master password: ")
+			if err != nil {
+				return "", err
+			}
+
+			if password != confirm {
+				PrintError("Passwords do not match. Please try again.")
+				fmt.Println()
+				continue
+			}
+
+			PrintSuccess("Master password set successfully!")
+			fmt.Println()
+			return password, nil
+		}
+	}
+
+	// Existing vault - just ask for password once
+	password, err := ReadPassword("Master Password: ")
+	if err != nil {
+		return "", err
+	}
+	return password, nil
+}
+
 // Spinner shows a simple spinner animation
 type Spinner struct {
 	message string

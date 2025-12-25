@@ -16,10 +16,29 @@ When you run AuthKeeper for the first time, it will create a vault in `~/.authke
 
 ### 1. Create Your Master Password
 
-The master password is crucial - it encrypts all your credentials. Choose a strong password:
-- At least 12 characters
-- Mix of uppercase, lowercase, numbers, and symbols
-- Don't reuse passwords from other services
+**First-time experience:**
+
+```bash
+./authkeeper add
+```
+
+You'll see:
+```
+🔐 Create New Vault
+
+First time setup - creating encrypted vault
+You're creating a new vault. Please choose a strong master password.
+⚠ This password encrypts all your credentials - don't forget it!
+
+Enter master password: ••••••••••••
+Confirm master password: ••••••••••••
+✓ Master password set successfully!
+```
+
+The master password requirements:
+- **Minimum 8 characters**
+- Choose a strong, unique password
+- You'll need to enter it twice for confirmation
 - Store it in a secure password manager
 
 **Important**: If you lose your master password, there is no way to recover your credentials!
@@ -32,12 +51,17 @@ The master password is crucial - it encrypts all your credentials. Choose a stro
 ./authkeeper add
 ```
 
-**Step-by-step:**
+**First time (vault creation):**
+1. **Create Master Password** (minimum 8 characters)
+   - Enter password
+   - Confirm password
+   - Password must match
 
+**Subsequent times:**
 1. **Enter Master Password**
-   - First time: Creates new vault with this password
-   - Subsequent times: Unlocks existing vault
+   - Enter your existing password to unlock vault
 
+**Then for both:**
 2. **Enter Client Details**
    - **Name**: Friendly name for the client (e.g., "Production Auth Server")
    - **Client ID**: Your OAuth2 client identifier
@@ -47,7 +71,7 @@ The master password is crucial - it encrypts all your credentials. Choose a stro
 
 3. **Confirm Details**
    - Review all information
-   - Press Enter to save
+   - Press y to save or n to cancel
 
 **Example:**
 ```

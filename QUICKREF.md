@@ -1,5 +1,13 @@
 # AuthKeeper Quick Reference
 
+## First Run
+
+On first run, `authkeeper add` will:
+1. Prompt to create a new vault
+2. Ask for master password (min 8 chars)
+3. Ask to confirm password
+4. Create encrypted vault
+
 ## Commands
 
 | Command | Description | Shortcut |
