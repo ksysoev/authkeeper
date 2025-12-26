@@ -20,9 +20,18 @@ run: ## Run the application
 test: ## Run tests
 	go test -v -race ./...
 
+test-coverage: ## Run tests with coverage
+	go test -v -race -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	go tool cover -func=coverage.out | grep total
+
+generate-mocks: ## Generate mocks using mockery
+	go run github.com/vektra/mockery/v2@latest
+
 clean: ## Clean build artifacts
 	rm -f $(BINARY_NAME)
 	rm -rf dist/
+	rm -f coverage.out coverage.html
 
 tidy: ## Run go mod tidy
 	go mod tidy
@@ -33,4 +42,4 @@ fmt: ## Format code
 lint: ## Run golangci-lint
 	golangci-lint run
 
-.PHONY: help build install run test clean tidy fmt lint
+.PHONY: help build install run test test-coverage generate-mocks clean tidy fmt lint
