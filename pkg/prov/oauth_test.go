@@ -51,7 +51,7 @@ func TestOAuthProvider_GetToken(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				json.NewEncoder(w).Encode(map[string]interface{}{
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
 					"access_token": "test-access-token",
 					"token_type":   "Bearer",
 					"expires_in":   3600,
@@ -81,7 +81,7 @@ func TestOAuthProvider_GetToken(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				json.NewEncoder(w).Encode(map[string]interface{}{
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
 					"access_token": "test-access-token",
 					"token_type":   "Bearer",
 					"expires_in":   3600,
@@ -105,7 +105,7 @@ func TestOAuthProvider_GetToken(t *testing.T) {
 			serverResponse: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				json.NewEncoder(w).Encode(map[string]interface{}{
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
 					"error":             "invalid_client",
 					"error_description": "Invalid client credentials",
 				})
@@ -123,7 +123,7 @@ func TestOAuthProvider_GetToken(t *testing.T) {
 			serverResponse: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(map[string]interface{}{
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
 					"error": "unauthorized",
 				})
 			},
@@ -140,7 +140,7 @@ func TestOAuthProvider_GetToken(t *testing.T) {
 			serverResponse: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				w.Write([]byte("invalid json"))
+				_, _ = w.Write([]byte("invalid json"))
 			},
 			expectedToken: nil,
 			expectedErr:   "failed to parse token response",
@@ -154,7 +154,7 @@ func TestOAuthProvider_GetToken(t *testing.T) {
 			},
 			serverResponse: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte("Internal Server Error"))
+				_, _ = w.Write([]byte("Internal Server Error"))
 			},
 			expectedToken: nil,
 			expectedErr:   "token request failed with status 500",

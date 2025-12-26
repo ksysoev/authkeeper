@@ -13,7 +13,6 @@ import (
 
 var (
 	version = "dev"
-	name    = "authkeeper"
 )
 
 func main() {
