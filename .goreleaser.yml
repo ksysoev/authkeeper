@@ -1,0 +1,70 @@
+version: 2
+
+project_name: authkeeper
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: cmd/authkeeper/main.go
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+archives:
+  - name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+checksum:
+  name_template: "checksums.txt"
+changelog:
+  sort: asc
+release:
+  draft: true
+  github:
+    owner: ksysoev
+    name: authkeeper
+  name_template: "{{ .Tag }}"
+  prerelease: auto
+       
+brews:
+  - name: authkeeper
+    repository:
+      owner: ksysoev
+      name: homebrew-authkeeper
+    skip_upload: auto
+    directory: Formula
+    homepage: "https://github.com/ksysoev/authkeeper"
+    description: "A secure CLI secret manager and OAuth2/OIDC client"
+    test: |
+      system "#{bin}/authkeeper", "--version"
+    install: |
+      bin.install 'authkeeper'
+nfpms:
+  - id: authkeeper
+    vendor: "ksysoev"
+    homepage: "https://github.com/ksysoev/authkeeper"
+    maintainer: "Kirill Sysoev <k.sysoev@me.com>"
+    description: "A secure CLI secret manager and OAuth2/OIDC client with a simple terminal interface"
+    license: MIT
+    bindir: "/usr/bin"
+    formats:
+      - apk
+      - deb
+      - rpm
+snapcrafts:
+  - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    summary: "A secure CLI secret manager and OAuth2/OIDC client"
+    description: "AuthKeeper is a secure CLI secret manager with OAuth2/OIDC support, featuring AES-256-GCM encryption and a simple terminal interface."
+    license: MIT
+    base: "core18"
+    grade: devel
+    confinement: strict
+    apps:
+      authkeeper:
+        plugs: ["network", "network-bind", "home"]
