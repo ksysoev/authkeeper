@@ -13,27 +13,17 @@ import (
 )
 
 func TestNewVaultRepository(t *testing.T) {
-	repo := NewVaultRepository("/tmp/vault.enc", "password")
+	repo := NewVaultRepository("/tmp/vault.enc")
 
 	assert.NotNil(t, repo)
 	assert.Equal(t, "/tmp/vault.enc", repo.path)
-	assert.Equal(t, "password", repo.password)
-}
-
-func TestGetDefaultVaultPath(t *testing.T) {
-	path, err := GetDefaultVaultPath()
-
-	require.NoError(t, err)
-	assert.NotEmpty(t, path)
-	assert.Contains(t, path, ".authkeeper")
-	assert.Contains(t, path, "vault.enc")
 }
 
 func TestVaultRepository_Exists(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
 
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 
 	assert.False(t, repo.Exists())
 
@@ -48,8 +38,11 @@ func TestVaultRepository_SaveAndGet(t *testing.T) {
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
 	password := "test-password"
 
-	repo := NewVaultRepository(vaultPath, password)
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, password)
+	require.NoError(t, err)
 
 	client := core.Client{
 		Name:         "test-client",
@@ -60,7 +53,7 @@ func TestVaultRepository_SaveAndGet(t *testing.T) {
 		CreatedAt:    time.Now().Truncate(time.Second),
 	}
 
-	err := repo.Save(ctx, client)
+	err = repo.Save(ctx, client)
 	require.NoError(t, err)
 
 	retrieved, err := repo.Get(ctx, "test-client")
@@ -76,8 +69,11 @@ func TestVaultRepository_SaveAndGet(t *testing.T) {
 func TestVaultRepository_Save_DuplicateName(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
 
 	client1 := core.Client{
 		Name:         "test-client",
@@ -86,7 +82,7 @@ func TestVaultRepository_Save_DuplicateName(t *testing.T) {
 		TokenURL:     "https://example.com/token",
 	}
 
-	err := repo.Save(ctx, client1)
+	err = repo.Save(ctx, client1)
 	require.NoError(t, err)
 
 	client2 := core.Client{
@@ -104,8 +100,11 @@ func TestVaultRepository_Save_DuplicateName(t *testing.T) {
 func TestVaultRepository_Save_AutoTimestamp(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
 
 	client := core.Client{
 		Name:         "test-client",
@@ -115,7 +114,7 @@ func TestVaultRepository_Save_AutoTimestamp(t *testing.T) {
 	}
 
 	before := time.Now()
-	err := repo.Save(ctx, client)
+	err = repo.Save(ctx, client)
 	after := time.Now()
 
 	require.NoError(t, err)
@@ -129,8 +128,11 @@ func TestVaultRepository_Save_AutoTimestamp(t *testing.T) {
 func TestVaultRepository_Get_NotFound(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
 
 	client, err := repo.Get(ctx, "nonexistent")
 
@@ -142,8 +144,11 @@ func TestVaultRepository_Get_NotFound(t *testing.T) {
 func TestVaultRepository_List(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
 
 	names, err := repo.List(ctx)
 	require.NoError(t, err)
@@ -171,8 +176,11 @@ func TestVaultRepository_List(t *testing.T) {
 func TestVaultRepository_GetAll(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
 
 	clients, err := repo.GetAll(ctx)
 	require.NoError(t, err)
@@ -204,8 +212,11 @@ func TestVaultRepository_GetAll(t *testing.T) {
 func TestVaultRepository_Delete(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
+
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
 
 	clients := []core.Client{
 		{Name: "client1", ClientID: "id1", ClientSecret: "secret1", TokenURL: "url1"},
@@ -217,7 +228,7 @@ func TestVaultRepository_Delete(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	err := repo.Delete(ctx, "client1")
+	err = repo.Delete(ctx, "client1")
 	require.NoError(t, err)
 
 	names, err := repo.List(ctx)
@@ -233,10 +244,13 @@ func TestVaultRepository_Delete(t *testing.T) {
 func TestVaultRepository_Delete_NotFound(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
 
-	err := repo.Delete(ctx, "nonexistent")
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
+
+	err = repo.Delete(ctx, "nonexistent")
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "not found")
@@ -247,7 +261,10 @@ func TestVaultRepository_WrongPassword(t *testing.T) {
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
 	ctx := context.Background()
 
-	repo1 := NewVaultRepository(vaultPath, "correct-password")
+	repo1 := NewVaultRepository(vaultPath)
+	err := repo1.Load(ctx, "correct-password")
+	require.NoError(t, err)
+
 	client := core.Client{
 		Name:         "test-client",
 		ClientID:     "client-id",
@@ -255,11 +272,11 @@ func TestVaultRepository_WrongPassword(t *testing.T) {
 		TokenURL:     "https://example.com/token",
 	}
 
-	err := repo1.Save(ctx, client)
+	err = repo1.Save(ctx, client)
 	require.NoError(t, err)
 
-	repo2 := NewVaultRepository(vaultPath, "wrong-password")
-	_, err = repo2.Get(ctx, "test-client")
+	repo2 := NewVaultRepository(vaultPath)
+	err = repo2.Load(ctx, "wrong-password")
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to decrypt vault")
@@ -339,10 +356,13 @@ func TestToClientData_ToClient(t *testing.T) {
 func TestVaultRepository_EmptyFile(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
 
-	err := os.WriteFile(vaultPath, []byte(""), 0600)
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
+
+	err = os.WriteFile(vaultPath, []byte(""), 0600)
 	require.NoError(t, err)
 
 	clients, err := repo.List(ctx)
@@ -353,10 +373,13 @@ func TestVaultRepository_EmptyFile(t *testing.T) {
 func TestVaultRepository_MultipleOperations(t *testing.T) {
 	tmpDir := t.TempDir()
 	vaultPath := filepath.Join(tmpDir, "vault.enc")
-	repo := NewVaultRepository(vaultPath, "password")
+	repo := NewVaultRepository(vaultPath)
 	ctx := context.Background()
 
-	err := repo.Save(ctx, core.Client{Name: "client1", ClientID: "id1", ClientSecret: "s1", TokenURL: "u1"})
+	err := repo.Load(ctx, "password")
+	require.NoError(t, err)
+
+	err = repo.Save(ctx, core.Client{Name: "client1", ClientID: "id1", ClientSecret: "s1", TokenURL: "u1"})
 	require.NoError(t, err)
 
 	err = repo.Save(ctx, core.Client{Name: "client2", ClientID: "id2", ClientSecret: "s2", TokenURL: "u2"})

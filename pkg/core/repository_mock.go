@@ -290,6 +290,53 @@ func (_c *MockRepository_List_Call) RunAndReturn(run func(context.Context) ([]st
 	return _c
 }
 
+// Load provides a mock function with given fields: ctx, password
+func (_m *MockRepository) Load(ctx context.Context, password string) error {
+	ret := _m.Called(ctx, password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Load")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, password)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockRepository_Load_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Load'
+type MockRepository_Load_Call struct {
+	*mock.Call
+}
+
+// Load is a helper method to define mock.On call
+//   - ctx context.Context
+//   - password string
+func (_e *MockRepository_Expecter) Load(ctx interface{}, password interface{}) *MockRepository_Load_Call {
+	return &MockRepository_Load_Call{Call: _e.mock.On("Load", ctx, password)}
+}
+
+func (_c *MockRepository_Load_Call) Run(run func(ctx context.Context, password string)) *MockRepository_Load_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockRepository_Load_Call) Return(_a0 error) *MockRepository_Load_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockRepository_Load_Call) RunAndReturn(run func(context.Context, string) error) *MockRepository_Load_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Save provides a mock function with given fields: ctx, client
 func (_m *MockRepository) Save(ctx context.Context, client Client) error {
 	ret := _m.Called(ctx, client)

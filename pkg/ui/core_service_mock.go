@@ -71,6 +71,53 @@ func (_c *MockCoreService_AddClient_Call) RunAndReturn(run func(context.Context,
 	return _c
 }
 
+// CheckPassword provides a mock function with given fields: ctx, password
+func (_m *MockCoreService) CheckPassword(ctx context.Context, password string) error {
+	ret := _m.Called(ctx, password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckPassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, password)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockCoreService_CheckPassword_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckPassword'
+type MockCoreService_CheckPassword_Call struct {
+	*mock.Call
+}
+
+// CheckPassword is a helper method to define mock.On call
+//   - ctx context.Context
+//   - password string
+func (_e *MockCoreService_Expecter) CheckPassword(ctx interface{}, password interface{}) *MockCoreService_CheckPassword_Call {
+	return &MockCoreService_CheckPassword_Call{Call: _e.mock.On("CheckPassword", ctx, password)}
+}
+
+func (_c *MockCoreService_CheckPassword_Call) Run(run func(ctx context.Context, password string)) *MockCoreService_CheckPassword_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockCoreService_CheckPassword_Call) Return(_a0 error) *MockCoreService_CheckPassword_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockCoreService_CheckPassword_Call) RunAndReturn(run func(context.Context, string) error) *MockCoreService_CheckPassword_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteClient provides a mock function with given fields: ctx, name
 func (_m *MockCoreService) DeleteClient(ctx context.Context, name string) error {
 	ret := _m.Called(ctx, name)
