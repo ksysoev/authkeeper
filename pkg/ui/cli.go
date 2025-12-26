@@ -53,7 +53,7 @@ func NewCLI(service CoreService) *CLI {
 func (c *CLI) AddClient(ctx context.Context) error {
 	password, err := c.PromptMasterPassword(!c.service.IsRepositoryInitialized())
 	if err != nil {
-		return fmt.Errorf("failed to create master password: %w", err)
+		return fmt.Errorf("failed to get master password: %w", err)
 	}
 
 	err = c.service.CheckPassword(ctx, password)
