@@ -9,15 +9,17 @@ import (
 
 func TestNewApp(t *testing.T) {
 	cli := &ui.CLI{}
-	app := NewApp(cli)
+	vaultPath := "/tmp/vault.enc"
+	app := NewApp(cli, vaultPath)
 
 	assert.NotNil(t, app)
 	assert.Equal(t, cli, app.cli)
+	assert.Equal(t, vaultPath, app.vaultPath)
 }
 
 func TestApp_BuildRootCommand(t *testing.T) {
 	cli := &ui.CLI{}
-	app := NewApp(cli)
+	app := NewApp(cli, "/tmp/vault.enc")
 	version := "1.0.0"
 
 	rootCmd := app.BuildRootCommand(version)
@@ -44,7 +46,7 @@ func TestApp_BuildRootCommand(t *testing.T) {
 
 func TestApp_AddCommand(t *testing.T) {
 	cli := &ui.CLI{}
-	app := NewApp(cli)
+	app := NewApp(cli, "/tmp/vault.enc")
 
 	cmd := app.addCommand()
 
@@ -57,7 +59,7 @@ func TestApp_AddCommand(t *testing.T) {
 
 func TestApp_TokenCommand(t *testing.T) {
 	cli := &ui.CLI{}
-	app := NewApp(cli)
+	app := NewApp(cli, "/tmp/vault.enc")
 
 	cmd := app.tokenCommand()
 
@@ -70,7 +72,7 @@ func TestApp_TokenCommand(t *testing.T) {
 
 func TestApp_ListCommand(t *testing.T) {
 	cli := &ui.CLI{}
-	app := NewApp(cli)
+	app := NewApp(cli, "/tmp/vault.enc")
 
 	cmd := app.listCommand()
 
@@ -83,7 +85,7 @@ func TestApp_ListCommand(t *testing.T) {
 
 func TestApp_DeleteCommand(t *testing.T) {
 	cli := &ui.CLI{}
-	app := NewApp(cli)
+	app := NewApp(cli, "/tmp/vault.enc")
 
 	cmd := app.deleteCommand()
 

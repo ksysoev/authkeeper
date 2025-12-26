@@ -48,6 +48,11 @@ func NewCLI(service CoreService) *CLI {
 	}
 }
 
+// IsVaultInitialized checks if the vault is initialized
+func (c *CLI) IsVaultInitialized() bool {
+	return c.service.IsRepositoryInitialized()
+}
+
 // AddClient handles the add client flow
 func (c *CLI) AddClient(ctx context.Context) error {
 	printTitle("🔐 Add OIDC Client")

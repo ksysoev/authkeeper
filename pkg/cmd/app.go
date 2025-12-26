@@ -1,21 +1,21 @@
 package cmd
 
 import (
-	"context"
-
 	"github.com/ksysoev/authkeeper/pkg/ui"
 	"github.com/spf13/cobra"
 )
 
 // App holds application dependencies
 type App struct {
-	cli *ui.CLI
+	cli       *ui.CLI
+	vaultPath string
 }
 
 // NewApp creates a new application
-func NewApp(cli *ui.CLI) *App {
+func NewApp(cli *ui.CLI, vaultPath string) *App {
 	return &App{
-		cli: cli,
+		cli:       cli,
+		vaultPath: vaultPath,
 	}
 }
 
@@ -42,7 +42,7 @@ func (app *App) addCommand() *cobra.Command {
 		Short: "Add a new OIDC client to the vault",
 		Long:  `Interactive command to add a new OIDC client with credentials to the encrypted vault.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.cli.AddClient(context.Background())
+			return app.handleAddClient(cmd.Context())
 		},
 	}
 }
@@ -53,7 +53,10 @@ func (app *App) tokenCommand() *cobra.Command {
 		Short: "Issue an access token",
 		Long:  `Select an OIDC client from the vault and issue an access token using client credentials flow.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.cli.IssueToken(context.Background())
+			if !app.cli.IsVaultInitialized() {
+				return app.vaultNotInitializedError()
+			}
+			return app.cli.IssueToken(cmd.Context())
 		},
 	}
 }
@@ -64,7 +67,10 @@ func (app *App) listCommand() *cobra.Command {
 		Short: "List all OIDC clients",
 		Long:  `Display all OIDC clients stored in the vault.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.cli.ListClients(context.Background())
+			if !app.cli.IsVaultInitialized() {
+				return app.vaultNotInitializedError()
+			}
+			return app.cli.ListClients(cmd.Context())
 		},
 	}
 }
@@ -75,7 +81,10 @@ func (app *App) deleteCommand() *cobra.Command {
 		Short: "Delete an OIDC client",
 		Long:  `Select and delete an OIDC client from the vault.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.cli.DeleteClient(context.Background())
+			if !app.cli.IsVaultInitialized() {
+				return app.vaultNotInitializedError()
+			}
+			return app.cli.DeleteClient(cmd.Context())
 		},
 	}
 }
