@@ -1,6 +1,10 @@
 # AuthKeeper
 
-A secure CLI secret manager and OAuth2/OIDC client with a simple terminal interface.
+[![Tests](https://github.com/ksysoev/authkeeper/actions/workflows/ci.yml/badge.svg)](https://github.com/ksysoev/authkeeper/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ksysoev/authkeeper)](https://goreportcard.com/report/github.com/ksysoev/authkeeper)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+A secure CLI secret manager and OAuth2/OIDC client with a simple terminal interface. Store OAuth2/OIDC credentials in an encrypted vault and quickly issue access tokens using the client credentials flow.
 
 ## Features
 
@@ -12,6 +16,25 @@ A secure CLI secret manager and OAuth2/OIDC client with a simple terminal interf
 - ⌨️ **Intuitive Prompts** - Straightforward command-line interaction
 
 ## Installation
+
+### Downloading binaries:
+
+Compiled executables can be downloaded from [here](https://github.com/ksysoev/authkeeper/releases).
+
+### Install from source code:
+
+```bash
+go install github.com/ksysoev/authkeeper/cmd/authkeeper@latest
+```
+
+### Install with homebrew:
+
+```bash
+brew tap ksysoev/authkeeper
+brew install authkeeper
+```
+
+### Build from source:
 
 ```bash
 # Clone the repository
@@ -25,14 +48,14 @@ make build
 make install
 ```
 
-## Quick Start
+## Usage
 
 ### First Time Setup
 
 When you run `authkeeper add` for the first time, you'll be prompted to create a new vault:
 
 ```bash
-./authkeeper add
+authkeeper add
 ```
 
 **First-time flow:**
@@ -42,12 +65,10 @@ When you run `authkeeper add` for the first time, you'll be prompted to create a
 
 **Important:** Your master password encrypts all credentials. If you forget it, there's no way to recover your data!
 
-### 1. Add your first OIDC client
-
-After creating the vault (or on subsequent runs):
+### Add an OIDC client
 
 ```bash
-./authkeeper add
+authkeeper add
 ```
 
 You'll be prompted to:
@@ -60,29 +81,29 @@ You'll be prompted to:
    - Scopes (optional, space-separated)
 3. Review and confirm
 
-### 2. Issue an access token
+### Issue an access token
 
 ```bash
-./authkeeper token
+authkeeper token
 ```
 
 Enter your password, select a client from the numbered list, and get your token!
 
-### 3. List all clients
+### List all clients
 
 ```bash
-./authkeeper list
+authkeeper list
 ```
 
-### 4. Delete a client
+### Delete a client
 
 ```bash
-./authkeeper delete
+authkeeper delete
 ```
 
 Select a client and confirm deletion.
 
-## Demo with Mock Server
+### Example
 
 Try AuthKeeper with a local mock OAuth2 server:
 
@@ -91,7 +112,7 @@ Try AuthKeeper with a local mock OAuth2 server:
 go run examples/mock-server/main.go
 
 # Terminal 2: Add the mock server as a client
-./authkeeper add
+authkeeper add
 # Use these values:
 # - Name: Mock Server
 # - Client ID: test-client-id
@@ -100,7 +121,7 @@ go run examples/mock-server/main.go
 # - Scopes: read write
 
 # Get an access token
-./authkeeper token
+authkeeper token
 ```
 
 ## Commands
@@ -112,33 +133,6 @@ go run examples/mock-server/main.go
 | `authkeeper list` | List all stored clients |
 | `authkeeper delete` | Delete a client from vault |
 | `authkeeper --help` | Show help information |
-
-## User Interface
-
-The interface uses colored terminal output for clarity:
-- 🟣 **Magenta** - Titles and headings
-- 🔵 **Cyan** - Interactive prompts and selections
-- 🟢 **Green** - Success messages
-- 🔴 **Red** - Error messages
-- 🟡 **Yellow** - Warnings
-- ⚪ **Gray** - Muted/informational text
-
-All interactions are simple text prompts - just type your answers and press Enter.
-
-## Architecture
-
-```
-authkeeper/
-├── cmd/authkeeper/          # Main application entry
-├── pkg/
-│   ├── cmd/                 # Cobra commands
-│   ├── vault/               # Encrypted vault management
-│   ├── oauth/               # OAuth2 client
-│   ├── ui/                  # Terminal UI utilities
-│   └── crypto/              # Encryption utilities
-└── examples/
-    └── mock-server/         # Mock OAuth2 server for testing
-```
 
 ## Security
 
@@ -157,7 +151,11 @@ authkeeper/
 ### Vault Location
 Default vault location: `~/.authkeeper/vault.enc`
 
-## Development
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+### Development
 
 ```bash
 # Run tests
@@ -176,37 +174,6 @@ make build
 make clean
 ```
 
-## Tech Stack
-
-- **Framework**: [Cobra](https://github.com/spf13/cobra) - CLI framework
-- **Terminal I/O**: golang.org/x/term - Password input handling
-- **Crypto**: golang.org/x/crypto - Encryption primitives
-- **OAuth2**: golang.org/x/oauth2 - OAuth2 support
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
-
-## Roadmap
-
-- [ ] Authorization code flow support
-- [ ] Device code flow support
-- [ ] Token refresh mechanism
-- [ ] Export/import vault
-- [ ] Multiple vault support
-- [ ] Token caching
-- [ ] Shell completion scripts
-
-## Interface Style
-
-The CLI uses a simple, straightforward text interface:
-- Clear prompts for user input
-- Colored output for better readability
-- Password fields masked with bullets (•)
-- Boxed output for structured data
-- Confirmation prompts for destructive operations
-- Spinner indicators for operations that take time
+AuthKeeper is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
