@@ -5,6 +5,8 @@ import "context"
 // Repository defines the interface for storing and retrieving clients
 // Interface is defined on consumer side (core) following hexagonal architecture
 type Repository interface {
+	// Load initializes the repository with the given password
+	Load(ctx context.Context, password string) error
 	// Save stores a client
 	Save(ctx context.Context, client Client) error
 

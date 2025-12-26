@@ -76,3 +76,8 @@ func (s *Service) IssueToken(ctx context.Context, clientName string) (*Token, er
 func (s *Service) IsRepositoryInitialized() bool {
 	return s.repo.Exists()
 }
+
+// CheckPassword verifies the provided password by attempting to load the repository
+func (s *Service) CheckPassword(ctx context.Context, password string) error {
+	return s.repo.Load(ctx, password)
+}
