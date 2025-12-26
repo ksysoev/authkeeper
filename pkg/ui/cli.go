@@ -34,6 +34,7 @@ type CoreService interface {
 	DeleteClient(ctx context.Context, name string) error
 	IssueToken(ctx context.Context, clientName string) (*core.Token, error)
 	IsRepositoryInitialized() bool
+	CheckPassword(ctx context.Context, password string) error
 }
 
 // CLI implements the command-line interface
@@ -50,6 +51,16 @@ func NewCLI(service CoreService) *CLI {
 
 // AddClient handles the add client flow
 func (c *CLI) AddClient(ctx context.Context) error {
+	password, err := c.PromptMasterPassword(!c.service.IsRepositoryInitialized())
+	if err != nil {
+		return fmt.Errorf("failed to get master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
+	}
+
 	printTitle("🔐 Add OIDC Client")
 	fmt.Println()
 
@@ -128,6 +139,19 @@ func (c *CLI) AddClient(ctx context.Context) error {
 
 // IssueToken handles the token issuance flow
 func (c *CLI) IssueToken(ctx context.Context) error {
+	if !c.service.IsRepositoryInitialized() {
+		return fmt.Errorf("vault not initialized; please add a client first")
+	}
+	password, err := c.PromptMasterPassword(false)
+	if err != nil {
+		return fmt.Errorf("failed to read master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
+	}
+
 	printTitle("🎫 Issue Access Token")
 	fmt.Println()
 
@@ -193,6 +217,19 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 
 // ListClients handles the list clients flow
 func (c *CLI) ListClients(ctx context.Context) error {
+	if !c.service.IsRepositoryInitialized() {
+		return fmt.Errorf("vault not initialized; please add a client first")
+	}
+	password, err := c.PromptMasterPassword(false)
+	if err != nil {
+		return fmt.Errorf("failed to read master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
+	}
+
 	printTitle("📋 OIDC Clients")
 	fmt.Println()
 
@@ -237,6 +274,19 @@ func (c *CLI) ListClients(ctx context.Context) error {
 
 // DeleteClient handles the delete client flow
 func (c *CLI) DeleteClient(ctx context.Context) error {
+	if !c.service.IsRepositoryInitialized() {
+		return fmt.Errorf("vault not initialized; please add a client first")
+	}
+	password, err := c.PromptMasterPassword(false)
+	if err != nil {
+		return fmt.Errorf("failed to read master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
+	}
+
 	printTitle("🗑️  Delete OIDC Client")
 	fmt.Println()
 

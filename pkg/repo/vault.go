@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/ksysoev/authkeeper/pkg/core"
@@ -43,32 +42,23 @@ type VaultRepository struct {
 }
 
 // NewVaultRepository creates a new vault repository
-func NewVaultRepository(path string, password string) *VaultRepository {
+func NewVaultRepository(path string) *VaultRepository {
 	return &VaultRepository{
-		path:     path,
-		password: password,
+		path: path,
 	}
-}
-
-// GetDefaultVaultPath returns the default vault path in user's home directory
-func GetDefaultVaultPath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", fmt.Errorf("failed to get home directory: %w", err)
-	}
-
-	vaultDir := filepath.Join(home, ".authkeeper")
-	if err := os.MkdirAll(vaultDir, 0700); err != nil {
-		return "", fmt.Errorf("failed to create vault directory: %w", err)
-	}
-
-	return filepath.Join(vaultDir, "vault.enc"), nil
 }
 
 // Exists checks if the vault file exists
 func (r *VaultRepository) Exists() bool {
 	_, err := os.Stat(r.path)
 	return err == nil
+}
+
+// Load unlocks the vault with the given password
+func (r *VaultRepository) Load(_ context.Context, password string) error {
+	r.password = password
+	_, err := r.load()
+	return err
 }
 
 // Save stores a client in the vault

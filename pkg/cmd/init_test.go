@@ -3,25 +3,15 @@ package cmd
 import (
 	"testing"
 
-	"github.com/ksysoev/authkeeper/pkg/ui"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewApp(t *testing.T) {
-	cli := &ui.CLI{}
-	app := NewApp(cli)
-
-	assert.NotNil(t, app)
-	assert.Equal(t, cli, app.cli)
-}
-
-func TestApp_BuildRootCommand(t *testing.T) {
-	cli := &ui.CLI{}
-	app := NewApp(cli)
+func TestInitCommands(t *testing.T) {
 	version := "1.0.0"
 
-	rootCmd := app.BuildRootCommand(version)
+	rootCmd, err := InitCommands(version)
 
+	assert.NoError(t, err)
 	assert.NotNil(t, rootCmd)
 	assert.Equal(t, "authkeeper", rootCmd.Use)
 	assert.Equal(t, version, rootCmd.Version)
@@ -42,11 +32,13 @@ func TestApp_BuildRootCommand(t *testing.T) {
 	assert.True(t, commandNames["delete"])
 }
 
-func TestApp_AddCommand(t *testing.T) {
-	cli := &ui.CLI{}
-	app := NewApp(cli)
+func TestAddCommand(t *testing.T) {
+	args := &args{
+		version:   "1.0.0",
+		vaultPath: "/tmp/vault.enc",
+	}
 
-	cmd := app.addCommand()
+	cmd := AddCommand(args)
 
 	assert.NotNil(t, cmd)
 	assert.Equal(t, "add", cmd.Use)
@@ -55,11 +47,13 @@ func TestApp_AddCommand(t *testing.T) {
 	assert.NotNil(t, cmd.RunE)
 }
 
-func TestApp_TokenCommand(t *testing.T) {
-	cli := &ui.CLI{}
-	app := NewApp(cli)
+func TestTokenCommand(t *testing.T) {
+	args := &args{
+		version:   "1.0.0",
+		vaultPath: "/tmp/vault.enc",
+	}
 
-	cmd := app.tokenCommand()
+	cmd := TokenCommand(args)
 
 	assert.NotNil(t, cmd)
 	assert.Equal(t, "token", cmd.Use)
@@ -68,11 +62,13 @@ func TestApp_TokenCommand(t *testing.T) {
 	assert.NotNil(t, cmd.RunE)
 }
 
-func TestApp_ListCommand(t *testing.T) {
-	cli := &ui.CLI{}
-	app := NewApp(cli)
+func TestListCommand(t *testing.T) {
+	args := &args{
+		version:   "1.0.0",
+		vaultPath: "/tmp/vault.enc",
+	}
 
-	cmd := app.listCommand()
+	cmd := ListCommand(args)
 
 	assert.NotNil(t, cmd)
 	assert.Equal(t, "list", cmd.Use)
@@ -81,11 +77,13 @@ func TestApp_ListCommand(t *testing.T) {
 	assert.NotNil(t, cmd.RunE)
 }
 
-func TestApp_DeleteCommand(t *testing.T) {
-	cli := &ui.CLI{}
-	app := NewApp(cli)
+func TestDeleteCommand(t *testing.T) {
+	args := &args{
+		version:   "1.0.0",
+		vaultPath: "/tmp/vault.enc",
+	}
 
-	cmd := app.deleteCommand()
+	cmd := DeleteCommand(args)
 
 	assert.NotNil(t, cmd)
 	assert.Equal(t, "delete", cmd.Use)
