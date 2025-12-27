@@ -303,12 +303,12 @@ func (c *CLI) PromptMasterPassword(isNewVault bool) (string, error) {
 				continue
 			}
 
-			confirm, err := readPassword("Confirm master password: ")
+			confirmPassword, err := readPassword("Confirm master password: ")
 			if err != nil {
 				return "", err
 			}
 
-			if password != confirm {
+			if password != confirmPassword {
 				printError("Passwords do not match. Please try again.")
 				fmt.Println()
 				continue
