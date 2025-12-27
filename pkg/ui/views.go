@@ -11,9 +11,6 @@ import (
 
 // AddClient handles the add client flow
 func (c *CLI) AddClient(ctx context.Context) error {
-	printTitle("🔐 Add OIDC Client")
-	fmt.Println()
-
 	password, err := c.PromptMasterPassword(!c.service.IsRepositoryInitialized())
 	if err != nil {
 		return fmt.Errorf("failed to get master password: %w", err)
@@ -97,9 +94,6 @@ func (c *CLI) AddClient(ctx context.Context) error {
 
 // IssueToken handles the token issuance flow
 func (c *CLI) IssueToken(ctx context.Context) error {
-	printTitle("🎫 Issue Access Token")
-	fmt.Println()
-
 	// Check if repository is initialized
 	if !c.service.IsRepositoryInitialized() {
 		printWarning("Vault not found")
@@ -167,9 +161,6 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 
 // ListClients handles the list clients flow
 func (c *CLI) ListClients(ctx context.Context) error {
-	printTitle("📋 OIDC Clients")
-	fmt.Println()
-
 	// Check if repository is initialized
 	if !c.service.IsRepositoryInitialized() {
 		printWarning("Vault not found")
@@ -219,9 +210,6 @@ func (c *CLI) ListClients(ctx context.Context) error {
 
 // DeleteClient handles the delete client flow
 func (c *CLI) DeleteClient(ctx context.Context) error {
-	printTitle("🗑️  Delete OIDC Client")
-	fmt.Println()
-
 	// Check if repository is initialized
 	if !c.service.IsRepositoryInitialized() {
 		printWarning("Vault not found")
