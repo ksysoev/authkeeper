@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"strings"
 )
 
 func printTitle(text string) {
@@ -32,20 +31,4 @@ func printMuted(text string) {
 func printProgress(text string) {
 	fmt.Printf("%s%s...%s ", colorCyan, text, colorReset)
 	fmt.Println()
-}
-
-func printBox(lines ...string) {
-	maxLen := 0
-	for _, line := range lines {
-		if len(line) > maxLen {
-			maxLen = len(line)
-		}
-	}
-
-	fmt.Println("┌" + strings.Repeat("─", maxLen+2) + "┐")
-	for _, line := range lines {
-		padding := maxLen - len(line)
-		fmt.Printf("│ %s%s │\n", line, strings.Repeat(" ", padding))
-	}
-	fmt.Println("└" + strings.Repeat("─", maxLen+2) + "┘")
 }

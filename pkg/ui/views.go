@@ -61,13 +61,11 @@ func (c *CLI) AddClient(ctx context.Context) error {
 	fmt.Println()
 	printInfo("Review client details:")
 	fmt.Println()
-	printBox(
-		fmt.Sprintf("Name:         %s", name),
-		fmt.Sprintf("Client ID:    %s", clientID),
-		fmt.Sprintf("Client Secret: %s", strings.Repeat("•", len(clientSecret))),
-		fmt.Sprintf("Token URL:    %s", tokenURL),
-		fmt.Sprintf("Scopes:       %s", strings.Join(scopes, ", ")),
-	)
+	fmt.Printf("Name:          %s\n", name)
+	fmt.Printf("Client ID:     %s\n", clientID)
+	fmt.Printf("Client Secret: %s\n", strings.Repeat("•", len(clientSecret)))
+	fmt.Printf("Token URL:     %s\n", tokenURL)
+	fmt.Printf("Scopes:        %s\n", strings.Join(scopes, ", "))
 	fmt.Println()
 
 	if !confirm("Save this client?") {
@@ -158,17 +156,12 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 	fmt.Println()
 	fmt.Printf("Client: %s\n", clients[idx])
 	fmt.Println()
-
-	printBox(
-		"Access Token:",
-		"",
-		token.AccessToken,
-		"",
-		fmt.Sprintf("Token Type: %s", token.TokenType),
-		fmt.Sprintf("Expires In: %d seconds", token.ExpiresIn),
-		fmt.Sprintf("Scope: %s", token.Scope),
-	)
-
+	fmt.Println("Access Token:")
+	fmt.Println(token.AccessToken)
+	fmt.Println()
+	fmt.Printf("Token Type: %s\n", token.TokenType)
+	fmt.Printf("Expires In: %d seconds\n", token.ExpiresIn)
+	fmt.Printf("Scope: %s\n", token.Scope)
 	fmt.Println()
 	printMuted("💡 Tip: Copy the access token to use in your API requests")
 
@@ -220,12 +213,10 @@ func (c *CLI) ListClients(ctx context.Context) error {
 
 	for i, client := range clients {
 		fmt.Printf("%s%d. %s%s\n", colorCyan, i+1, client.Name, colorReset)
-		printBox(
-			fmt.Sprintf("Client ID:  %s", client.ClientID),
-			fmt.Sprintf("Token URL:  %s", client.TokenURL),
-			fmt.Sprintf("Scopes:     %s", strings.Join(client.Scopes, ", ")),
-			fmt.Sprintf("Created:    %s", client.CreatedAt.Format("2006-01-02 15:04:05")),
-		)
+		fmt.Printf("   Client ID:  %s\n", client.ClientID)
+		fmt.Printf("   Token URL:  %s\n", client.TokenURL)
+		fmt.Printf("   Scopes:     %s\n", strings.Join(client.Scopes, ", "))
+		fmt.Printf("   Created:    %s\n", client.CreatedAt.Format("2006-01-02 15:04:05"))
 		fmt.Println()
 	}
 
