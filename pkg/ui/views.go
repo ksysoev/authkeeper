@@ -11,6 +11,9 @@ import (
 
 // AddClient handles the add client flow
 func (c *CLI) AddClient(ctx context.Context) error {
+	printTitle("🔐 Add OIDC Client")
+	fmt.Println()
+
 	password, err := c.PromptMasterPassword(!c.service.IsRepositoryInitialized())
 	if err != nil {
 		return fmt.Errorf("failed to get master password: %w", err)
@@ -20,9 +23,6 @@ func (c *CLI) AddClient(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
-	printTitle("🔐 Add OIDC Client")
-	fmt.Println()
 
 	printInfo("Enter client credentials")
 	fmt.Println()
@@ -97,19 +97,6 @@ func (c *CLI) AddClient(ctx context.Context) error {
 
 // IssueToken handles the token issuance flow
 func (c *CLI) IssueToken(ctx context.Context) error {
-	if !c.service.IsRepositoryInitialized() {
-		return fmt.Errorf("vault not initialized; please add a client first")
-	}
-	password, err := c.PromptMasterPassword(false)
-	if err != nil {
-		return fmt.Errorf("failed to read master password: %w", err)
-	}
-
-	err = c.service.CheckPassword(ctx, password)
-	if err != nil {
-		return err
-	}
-
 	printTitle("🎫 Issue Access Token")
 	fmt.Println()
 
@@ -118,6 +105,16 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 		printWarning("Vault not found")
 		printMuted("Use 'authkeeper add' to create vault and add your first client")
 		return nil
+	}
+
+	password, err := c.PromptMasterPassword(false)
+	if err != nil {
+		return fmt.Errorf("failed to read master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
 	}
 
 	// Load clients
@@ -170,19 +167,6 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 
 // ListClients handles the list clients flow
 func (c *CLI) ListClients(ctx context.Context) error {
-	if !c.service.IsRepositoryInitialized() {
-		return fmt.Errorf("vault not initialized; please add a client first")
-	}
-	password, err := c.PromptMasterPassword(false)
-	if err != nil {
-		return fmt.Errorf("failed to read master password: %w", err)
-	}
-
-	err = c.service.CheckPassword(ctx, password)
-	if err != nil {
-		return err
-	}
-
 	printTitle("📋 OIDC Clients")
 	fmt.Println()
 
@@ -191,6 +175,16 @@ func (c *CLI) ListClients(ctx context.Context) error {
 		printWarning("Vault not found")
 		printMuted("Use 'authkeeper add' to create vault and add your first client")
 		return nil
+	}
+
+	password, err := c.PromptMasterPassword(false)
+	if err != nil {
+		return fmt.Errorf("failed to read master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
 	}
 
 	// Load vault
@@ -225,19 +219,6 @@ func (c *CLI) ListClients(ctx context.Context) error {
 
 // DeleteClient handles the delete client flow
 func (c *CLI) DeleteClient(ctx context.Context) error {
-	if !c.service.IsRepositoryInitialized() {
-		return fmt.Errorf("vault not initialized; please add a client first")
-	}
-	password, err := c.PromptMasterPassword(false)
-	if err != nil {
-		return fmt.Errorf("failed to read master password: %w", err)
-	}
-
-	err = c.service.CheckPassword(ctx, password)
-	if err != nil {
-		return err
-	}
-
 	printTitle("🗑️  Delete OIDC Client")
 	fmt.Println()
 
@@ -246,6 +227,16 @@ func (c *CLI) DeleteClient(ctx context.Context) error {
 		printWarning("Vault not found")
 		printMuted("Use 'authkeeper add' to create vault and add your first client")
 		return nil
+	}
+
+	password, err := c.PromptMasterPassword(false)
+	if err != nil {
+		return fmt.Errorf("failed to read master password: %w", err)
+	}
+
+	err = c.service.CheckPassword(ctx, password)
+	if err != nil {
+		return err
 	}
 
 	// Load clients
