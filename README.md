@@ -1,6 +1,7 @@
 # AuthKeeper
 
 [![Tests](https://github.com/ksysoev/authkeeper/actions/workflows/ci.yml/badge.svg)](https://github.com/ksysoev/authkeeper/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ksysoev/authkeeper/graph/badge.svg?token=NBZY1JOHTK)](https://codecov.io/gh/ksysoev/authkeeper)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ksysoev/authkeeper)](https://goreportcard.com/report/github.com/ksysoev/authkeeper)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
