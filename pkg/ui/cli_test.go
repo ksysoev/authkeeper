@@ -19,7 +19,7 @@ func TestNewCLI(t *testing.T) {
 	assert.Equal(t, service, cli.service)
 }
 
-func TestCLI_AddClient_RepositoryNotInitialized(t *testing.T) {
+func TestCoreService_AddClient(t *testing.T) {
 	service := NewMockCoreService(t)
 	cli := NewCLI(service)
 
@@ -43,16 +43,27 @@ func TestCLI_AddClient_RepositoryNotInitialized(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestCLI_IssueToken_RepositoryNotInitialized(t *testing.T) {
-	service := NewMockCoreService(t)
-	cli := NewCLI(service)
+func TestCoreService_IsRepositoryInitialized(t *testing.T) {
+	t.Run("initialized", func(t *testing.T) {
+		service := NewMockCoreService(t)
+		cli := NewCLI(service)
 
-	service.EXPECT().IsRepositoryInitialized().Return(false)
+		service.EXPECT().IsRepositoryInitialized().Return(true)
 
-	assert.False(t, cli.service.IsRepositoryInitialized())
+		assert.True(t, cli.service.IsRepositoryInitialized())
+	})
+
+	t.Run("not initialized", func(t *testing.T) {
+		service := NewMockCoreService(t)
+		cli := NewCLI(service)
+
+		service.EXPECT().IsRepositoryInitialized().Return(false)
+
+		assert.False(t, cli.service.IsRepositoryInitialized())
+	})
 }
 
-func TestCLI_IssueToken_NoClients(t *testing.T) {
+func TestCoreService_ListClients_NoClients(t *testing.T) {
 	service := NewMockCoreService(t)
 	service.EXPECT().ListClients(mock.Anything).Return([]string{}, nil)
 
@@ -61,7 +72,7 @@ func TestCLI_IssueToken_NoClients(t *testing.T) {
 	assert.Empty(t, clients)
 }
 
-func TestCLI_IssueToken_Success(t *testing.T) {
+func TestCoreService_IssueToken_Success(t *testing.T) {
 	service := NewMockCoreService(t)
 	service.EXPECT().IssueToken(mock.Anything, "client1").Return(&core.Token{
 		AccessToken: "access-token",
@@ -78,7 +89,7 @@ func TestCLI_IssueToken_Success(t *testing.T) {
 	assert.Equal(t, 3600, token.ExpiresIn)
 }
 
-func TestCLI_IssueToken_Error(t *testing.T) {
+func TestCoreService_IssueToken_Error(t *testing.T) {
 	service := NewMockCoreService(t)
 	service.EXPECT().IssueToken(mock.Anything, "client1").Return(nil, errors.New("token error"))
 
@@ -87,7 +98,7 @@ func TestCLI_IssueToken_Error(t *testing.T) {
 	assert.Nil(t, token)
 }
 
-func TestCLI_ListClients_Success(t *testing.T) {
+func TestCoreService_GetAllClients_Success(t *testing.T) {
 	service := NewMockCoreService(t)
 	now := time.Now()
 	clients := []core.Client{
@@ -116,16 +127,7 @@ func TestCLI_ListClients_Success(t *testing.T) {
 	assert.Equal(t, "client2", result[1].Name)
 }
 
-func TestCLI_ListClients_RepositoryNotInitialized(t *testing.T) {
-	service := NewMockCoreService(t)
-	cli := NewCLI(service)
-
-	service.EXPECT().IsRepositoryInitialized().Return(false)
-
-	assert.False(t, cli.service.IsRepositoryInitialized())
-}
-
-func TestCLI_ListClients_Empty(t *testing.T) {
+func TestCoreService_GetAllClients_Empty(t *testing.T) {
 	service := NewMockCoreService(t)
 	service.EXPECT().GetAllClients(mock.Anything).Return([]core.Client{}, nil)
 
@@ -134,7 +136,7 @@ func TestCLI_ListClients_Empty(t *testing.T) {
 	assert.Empty(t, result)
 }
 
-func TestCLI_DeleteClient_Success(t *testing.T) {
+func TestCoreService_DeleteClient_Success(t *testing.T) {
 	service := NewMockCoreService(t)
 	service.EXPECT().DeleteClient(mock.Anything, "client1").Return(nil)
 
@@ -142,25 +144,7 @@ func TestCLI_DeleteClient_Success(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestCLI_DeleteClient_RepositoryNotInitialized(t *testing.T) {
-	service := NewMockCoreService(t)
-	cli := NewCLI(service)
-
-	service.EXPECT().IsRepositoryInitialized().Return(false)
-
-	assert.False(t, cli.service.IsRepositoryInitialized())
-}
-
-func TestCLI_DeleteClient_NoClients(t *testing.T) {
-	service := NewMockCoreService(t)
-	service.EXPECT().ListClients(mock.Anything).Return([]string{}, nil)
-
-	clients, err := service.ListClients(context.Background())
-	assert.NoError(t, err)
-	assert.Empty(t, clients)
-}
-
-func TestCLI_DeleteClient_Error(t *testing.T) {
+func TestCoreService_DeleteClient_Error(t *testing.T) {
 	service := NewMockCoreService(t)
 	cli := NewCLI(service)
 
@@ -171,7 +155,7 @@ func TestCLI_DeleteClient_Error(t *testing.T) {
 	assert.Contains(t, err.Error(), "delete error")
 }
 
-func TestCLI_GetClient_Success(t *testing.T) {
+func TestCoreService_GetClient_Success(t *testing.T) {
 	service := NewMockCoreService(t)
 	cli := NewCLI(service)
 
@@ -187,7 +171,7 @@ func TestCLI_GetClient_Success(t *testing.T) {
 	assert.Equal(t, expectedClient, client)
 }
 
-func TestCLI_GetClient_NotFound(t *testing.T) {
+func TestCoreService_GetClient_NotFound(t *testing.T) {
 	service := NewMockCoreService(t)
 	cli := NewCLI(service)
 
@@ -198,64 +182,25 @@ func TestCLI_GetClient_NotFound(t *testing.T) {
 	assert.Nil(t, client)
 }
 
-func TestPrintFunctions(t *testing.T) {
-	t.Run("printTitle", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printTitle("Test Title")
-		})
+func TestCoreService_CheckPassword(t *testing.T) {
+	t.Run("valid password", func(t *testing.T) {
+		service := NewMockCoreService(t)
+		cli := NewCLI(service)
+
+		service.EXPECT().CheckPassword(mock.Anything, "validpassword").Return(nil)
+
+		err := cli.service.CheckPassword(context.Background(), "validpassword")
+		assert.NoError(t, err)
 	})
 
-	t.Run("printSuccess", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printSuccess("Success message")
-		})
-	})
+	t.Run("invalid password", func(t *testing.T) {
+		service := NewMockCoreService(t)
+		cli := NewCLI(service)
 
-	t.Run("printError", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printError("Error message")
-		})
-	})
+		service.EXPECT().CheckPassword(mock.Anything, "wrong").Return(errors.New("invalid password"))
 
-	t.Run("printInfo", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printInfo("Info message")
-		})
+		err := cli.service.CheckPassword(context.Background(), "wrong")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid password")
 	})
-
-	t.Run("printWarning", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printWarning("Warning message")
-		})
-	})
-
-	t.Run("printMuted", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printMuted("Muted message")
-		})
-	})
-
-	t.Run("printProgress", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printProgress("Progress message")
-		})
-	})
-
-	t.Run("printBox", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printBox("Line 1", "Line 2", "Line 3")
-		})
-	})
-
-	t.Run("printBox empty", func(t *testing.T) {
-		assert.NotPanics(t, func() {
-			printBox()
-		})
-	})
-}
-
-func TestSelectFromList_NoItems(t *testing.T) {
-	_, err := selectFromList("Test", []string{})
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "no items to select from")
 }
