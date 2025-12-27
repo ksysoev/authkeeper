@@ -10,7 +10,7 @@ import (
 // require user input via stdin and are tested through integration tests.
 // These functions are interactive CLI flows that depend on:
 // - readPassword() - requires terminal input
-// - readLine() - requires stdin input  
+// - readLine() - requires stdin input
 // - confirm() - requires user confirmation
 // - selectFromList() - requires user selection
 //
