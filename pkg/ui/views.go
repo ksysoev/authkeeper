@@ -10,10 +10,7 @@ import (
 )
 
 // AddClient handles the add client flow
-func (c *CLI) AddClient(ctx context.Context) error {
-	printTitle("🔐 Add OIDC Client")
-	fmt.Println()
-
+func (c *CLI) AddClient(ctx context.Context, name, clientID, clientSecret, tokenURL, scopesStr string) error {
 	password, err := c.PromptMasterPassword(!c.service.IsRepositoryInitialized())
 	if err != nil {
 		return fmt.Errorf("failed to get master password: %w", err)
@@ -24,32 +21,45 @@ func (c *CLI) AddClient(ctx context.Context) error {
 		return err
 	}
 
-	printInfo("Enter client credentials")
-	fmt.Println()
-
-	name, err := readLine("Client Name: ")
-	if err != nil {
-		return err
+	// Prompt for missing fields
+	if name == "" || clientID == "" || clientSecret == "" || tokenURL == "" {
+		printInfo("Enter client credentials")
+		fmt.Println()
 	}
 
-	clientID, err := readLine("Client ID: ")
-	if err != nil {
-		return err
+	if name == "" {
+		name, err = readLine("Client Name: ")
+		if err != nil {
+			return err
+		}
 	}
 
-	clientSecret, err := readPassword("Client Secret: ")
-	if err != nil {
-		return err
+	if clientID == "" {
+		clientID, err = readLine("Client ID: ")
+		if err != nil {
+			return err
+		}
 	}
 
-	tokenURL, err := readLine("Token URL: ")
-	if err != nil {
-		return err
+	if clientSecret == "" {
+		clientSecret, err = readPassword("Client Secret: ")
+		if err != nil {
+			return err
+		}
 	}
 
-	scopesStr, err := readLine("Scopes (optional, space-separated): ")
-	if err != nil {
-		return err
+	if tokenURL == "" {
+		tokenURL, err = readLine("Token URL: ")
+		if err != nil {
+			return err
+		}
+	}
+
+	if scopesStr == "" {
+		scopesStr, err = readLine("Scopes (optional, space-separated): ")
+		if err != nil {
+			return err
+		}
 	}
 
 	var scopes []string
@@ -96,10 +106,7 @@ func (c *CLI) AddClient(ctx context.Context) error {
 }
 
 // IssueToken handles the token issuance flow
-func (c *CLI) IssueToken(ctx context.Context) error {
-	printTitle("🎫 Issue Access Token")
-	fmt.Println()
-
+func (c *CLI) IssueToken(ctx context.Context, clientName string) error {
 	// Check if repository is initialized
 	if !c.service.IsRepositoryInitialized() {
 		printWarning("Vault not found")
@@ -131,18 +138,36 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 		return nil
 	}
 
-	// Select client
-	fmt.Println()
-	idx, err := selectFromList("Select OIDC client:", clients)
-	if err != nil {
-		return err
+	var selectedClient string
+	if clientName != "" {
+		// Validate that the client exists
+		found := false
+		for _, client := range clients {
+			if client == clientName {
+				selectedClient = clientName
+				found = true
+				break
+			}
+		}
+		if !found {
+			printError(fmt.Sprintf("Client '%s' not found in vault", clientName))
+			return fmt.Errorf("client not found: %s", clientName)
+		}
+	} else {
+		// Select client interactively
+		fmt.Println()
+		idx, err := selectFromList("Select OIDC client:", clients)
+		if err != nil {
+			return err
+		}
+		selectedClient = clients[idx]
 	}
 
 	// Fetch token
 	fmt.Println()
 	printProgress("Fetching access token")
 
-	token, err := c.service.IssueToken(ctx, clients[idx])
+	token, err := c.service.IssueToken(ctx, selectedClient)
 	if err != nil {
 		printError(err.Error())
 		return err
@@ -151,7 +176,7 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 	// Display token
 	printSuccess("Token issued successfully!")
 	fmt.Println()
-	fmt.Printf("Client: %s\n", clients[idx])
+	fmt.Printf("Client: %s\n", selectedClient)
 	fmt.Println()
 	fmt.Println("Access Token:")
 	fmt.Println(token.AccessToken)
@@ -167,9 +192,6 @@ func (c *CLI) IssueToken(ctx context.Context) error {
 
 // ListClients handles the list clients flow
 func (c *CLI) ListClients(ctx context.Context) error {
-	printTitle("📋 OIDC Clients")
-	fmt.Println()
-
 	// Check if repository is initialized
 	if !c.service.IsRepositoryInitialized() {
 		printWarning("Vault not found")
@@ -218,10 +240,7 @@ func (c *CLI) ListClients(ctx context.Context) error {
 }
 
 // DeleteClient handles the delete client flow
-func (c *CLI) DeleteClient(ctx context.Context) error {
-	printTitle("🗑️  Delete OIDC Client")
-	fmt.Println()
-
+func (c *CLI) DeleteClient(ctx context.Context, clientName string, force bool) error {
 	// Check if repository is initialized
 	if !c.service.IsRepositoryInitialized() {
 		printWarning("Vault not found")
@@ -252,27 +271,47 @@ func (c *CLI) DeleteClient(ctx context.Context) error {
 		return nil
 	}
 
-	// Select client
-	fmt.Println()
-	idx, err := selectFromList("Select client to delete:", clients)
-	if err != nil {
-		return err
+	var selectedClient string
+	if clientName != "" {
+		// Validate that the client exists
+		found := false
+		for _, client := range clients {
+			if client == clientName {
+				selectedClient = clientName
+				found = true
+				break
+			}
+		}
+		if !found {
+			printError(fmt.Sprintf("Client '%s' not found in vault", clientName))
+			return fmt.Errorf("client not found: %s", clientName)
+		}
+	} else {
+		// Select client interactively
+		fmt.Println()
+		idx, err := selectFromList("Select client to delete:", clients)
+		if err != nil {
+			return err
+		}
+		selectedClient = clients[idx]
 	}
 
-	// Confirm deletion
-	fmt.Println()
-	printWarning(fmt.Sprintf("Are you sure you want to delete '%s'?", clients[idx]))
-	printMuted("This action cannot be undone.")
-	fmt.Println()
+	// Confirm deletion (unless force flag is set)
+	if !force {
+		fmt.Println()
+		printWarning(fmt.Sprintf("Are you sure you want to delete '%s'?", selectedClient))
+		printMuted("This action cannot be undone.")
+		fmt.Println()
 
-	if !confirm("Delete this client?") {
-		printInfo("Cancelled")
-		return nil
+		if !confirm("Delete this client?") {
+			printInfo("Cancelled")
+			return nil
+		}
 	}
 
 	// Delete
 	printProgress("Deleting client")
-	err = c.service.DeleteClient(ctx, clients[idx])
+	err = c.service.DeleteClient(ctx, selectedClient)
 	if err != nil {
 		printError(err.Error())
 		return err

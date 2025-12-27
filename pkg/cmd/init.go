@@ -59,31 +59,51 @@ func initCLI(arg *args) *ui.CLI {
 // AddCommand creates a new cobra.Command to add a new OIDC client to the vault.
 // It returns a pointer to a cobra.Command which can be executed to add a client.
 func AddCommand(arg *args) *cobra.Command {
-	return &cobra.Command{
-		Use:   "add",
+	var name, clientID, clientSecret, tokenURL, scopes string
+
+	cmd := &cobra.Command{
+		Use:   "add [flags]",
 		Short: "Add a new OIDC client to the vault",
-		Long:  `Interactive command to add a new OIDC client with credentials to the encrypted vault.`,
+		Long:  `Add a new OIDC client with credentials to the encrypted vault. If flags are not provided, the command will prompt interactively.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			cli := initCLI(arg)
 
-			return cli.AddClient(cmd.Context())
+			return cli.AddClient(cmd.Context(), name, clientID, clientSecret, tokenURL, scopes)
 		},
 	}
+
+	cmd.Flags().StringVarP(&name, "name", "n", "", "Client name")
+	cmd.Flags().StringVarP(&clientID, "client-id", "c", "", "Client ID")
+	cmd.Flags().StringVarP(&clientSecret, "client-secret", "s", "", "Client secret")
+	cmd.Flags().StringVarP(&tokenURL, "token-url", "t", "", "Token URL")
+	cmd.Flags().StringVar(&scopes, "scopes", "", "Scopes (space-separated)")
+
+	return cmd
 }
 
 // TokenCommand creates a new cobra.Command to issue an access token.
 // It returns a pointer to a cobra.Command which can be executed to issue a token.
 func TokenCommand(arg *args) *cobra.Command {
-	return &cobra.Command{
-		Use:   "token",
+	var clientName string
+
+	cmd := &cobra.Command{
+		Use:   "token [client-name]",
 		Short: "Issue an access token",
-		Long:  `Select an OIDC client from the vault and issue an access token using client credentials flow.`,
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		Long:  `Issue an access token for an OIDC client using client credentials flow. If client name is not provided, you will be prompted to select from available clients.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
 			cli := initCLI(arg)
 
-			return cli.IssueToken(cmd.Context())
+			if len(args) > 0 && clientName == "" {
+				clientName = args[0]
+			}
+
+			return cli.IssueToken(cmd.Context(), clientName)
 		},
 	}
+
+	cmd.Flags().StringVarP(&clientName, "client", "c", "", "Client name")
+
+	return cmd
 }
 
 // ListCommand creates a new cobra.Command to list all OIDC clients.
@@ -104,14 +124,26 @@ func ListCommand(arg *args) *cobra.Command {
 // DeleteCommand creates a new cobra.Command to delete an OIDC client.
 // It returns a pointer to a cobra.Command which can be executed to delete a client.
 func DeleteCommand(arg *args) *cobra.Command {
-	return &cobra.Command{
-		Use:   "delete",
+	var clientName string
+	var force bool
+
+	cmd := &cobra.Command{
+		Use:   "delete [client-name]",
 		Short: "Delete an OIDC client",
-		Long:  `Select and delete an OIDC client from the vault.`,
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		Long:  `Delete an OIDC client from the vault. If client name is not provided, you will be prompted to select from available clients.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
 			cli := initCLI(arg)
 
-			return cli.DeleteClient(cmd.Context())
+			if len(args) > 0 && clientName == "" {
+				clientName = args[0]
+			}
+
+			return cli.DeleteClient(cmd.Context(), clientName, force)
 		},
 	}
+
+	cmd.Flags().StringVarP(&clientName, "client", "c", "", "Client name")
+	cmd.Flags().BoolVarP(&force, "force", "f", false, "Skip confirmation prompt")
+
+	return cmd
 }

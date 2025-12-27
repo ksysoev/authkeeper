@@ -23,7 +23,9 @@ func TestInitCommands(t *testing.T) {
 
 	commandNames := make(map[string]bool)
 	for _, cmd := range subCommands {
-		commandNames[cmd.Use] = true
+		// Extract the base command name (first word)
+		cmdName := cmd.Name()
+		commandNames[cmdName] = true
 	}
 
 	assert.True(t, commandNames["add"])
@@ -41,7 +43,7 @@ func TestAddCommand(t *testing.T) {
 	cmd := AddCommand(args)
 
 	assert.NotNil(t, cmd)
-	assert.Equal(t, "add", cmd.Use)
+	assert.Equal(t, "add [flags]", cmd.Use)
 	assert.NotEmpty(t, cmd.Short)
 	assert.NotEmpty(t, cmd.Long)
 	assert.NotNil(t, cmd.RunE)
@@ -56,7 +58,7 @@ func TestTokenCommand(t *testing.T) {
 	cmd := TokenCommand(args)
 
 	assert.NotNil(t, cmd)
-	assert.Equal(t, "token", cmd.Use)
+	assert.Equal(t, "token [client-name]", cmd.Use)
 	assert.NotEmpty(t, cmd.Short)
 	assert.NotEmpty(t, cmd.Long)
 	assert.NotNil(t, cmd.RunE)
@@ -86,7 +88,7 @@ func TestDeleteCommand(t *testing.T) {
 	cmd := DeleteCommand(args)
 
 	assert.NotNil(t, cmd)
-	assert.Equal(t, "delete", cmd.Use)
+	assert.Equal(t, "delete [client-name]", cmd.Use)
 	assert.NotEmpty(t, cmd.Short)
 	assert.NotEmpty(t, cmd.Long)
 	assert.NotNil(t, cmd.RunE)
