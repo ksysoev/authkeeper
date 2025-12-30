@@ -398,3 +398,43 @@ func TestVaultRepository_MultipleOperations(t *testing.T) {
 	assert.Contains(t, names, "client3")
 	assert.NotContains(t, names, "client1")
 }
+
+func TestVaultRepository_CreatesDirectories(t *testing.T) {
+	tmpDir := t.TempDir()
+	vaultPath := filepath.Join(tmpDir, "nested", "deep", "directory", "vault.enc")
+	repo := NewVaultRepository(vaultPath)
+	ctx := context.Background()
+
+	dirPath := filepath.Join(tmpDir, "nested", "deep", "directory")
+	_, err := os.Stat(dirPath)
+	assert.True(t, os.IsNotExist(err), "directory should not exist before save")
+
+	err = repo.Load(ctx, "password")
+	require.NoError(t, err)
+
+	client := core.Client{
+		Name:         "test-client",
+		ClientID:     "client-id",
+		ClientSecret: "client-secret",
+		TokenURL:     "https://example.com/token",
+	}
+
+	err = repo.Save(ctx, client)
+	require.NoError(t, err)
+
+	_, err = os.Stat(dirPath)
+	assert.NoError(t, err, "directory should exist after save")
+
+	info, err := os.Stat(vaultPath)
+	require.NoError(t, err)
+	assert.Equal(t, os.FileMode(0600), info.Mode().Perm(), "vault file should have 0600 permissions")
+
+	dirInfo, err := os.Stat(dirPath)
+	require.NoError(t, err)
+	assert.True(t, dirInfo.IsDir(), "should be a directory")
+	assert.Equal(t, os.FileMode(0700), dirInfo.Mode().Perm(), "directory should have 0700 permissions")
+
+	retrieved, err := repo.Get(ctx, "test-client")
+	require.NoError(t, err)
+	assert.Equal(t, client.Name, retrieved.Name)
+}
