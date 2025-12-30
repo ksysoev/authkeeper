@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/ksysoev/authkeeper/pkg/core"
@@ -186,6 +187,11 @@ func (r *VaultRepository) save(data *vaultData) error {
 	ciphertext, err := encrypt(plaintext, r.password)
 	if err != nil {
 		return fmt.Errorf("failed to encrypt vault: %w", err)
+	}
+
+	dir := filepath.Dir(r.path)
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		return fmt.Errorf("failed to create vault directory: %w", err)
 	}
 
 	if err := os.WriteFile(r.path, ciphertext, 0600); err != nil {
